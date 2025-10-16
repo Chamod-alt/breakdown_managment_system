@@ -20,7 +20,7 @@ export default function Login() {
      navigate("/Userdashboad")
     }
     catch(error){
-    alert("login is unsuccess");
+    alert("invalid username or password");
     }
   }
 

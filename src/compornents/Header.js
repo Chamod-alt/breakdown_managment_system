@@ -1,6 +1,52 @@
-import React from "react";
+import React,{useEffect,useState} from "react";
+import { auth, database } from "../firebaseConfig";
+import { ref, get, onValue } from "firebase/database";
+import { Link } from "react-router-dom";
+
+
+
 
 const Header = () => {
+  const [userData, setUserData] = useState(null);
+
+
+  const fetchUserData = async (firebaseUid) => {
+      const usersRef = ref(database, "users");
+      const usersSnapshot = await get(usersRef);
+  
+      let foundUser = null;
+      let foundUserId = null;
+  
+      usersSnapshot.forEach((childSnapshot) => {
+        const data = childSnapshot.val();
+        if (data.firebaseUid === firebaseUid) {
+          foundUser = data;
+          foundUserId = childSnapshot.key;
+        }
+      });
+  
+      if (foundUser) {
+        setUserData({ ...foundUser, id: foundUserId });
+        return foundUserId;
+      } else {
+        console.error("User not found in database!");
+        return null;
+      }
+    };
+  
+    // Wait until Firebase Auth finishes loading user
+    useEffect(() => {
+      const unsubscribe = auth.onAuthStateChanged(async (user) => {
+        if (user) {
+          await fetchUserData(user.uid);
+        } else {
+          console.error("No user logged in");
+        }
+       
+      });
+      return () => unsubscribe();
+    }, []);
+
     return(
         <div>
 
@@ -23,9 +69,12 @@ const Header = () => {
           */}
         </div>
         <div className="flex items-center gap-4">
-          <button className="flex items-center justify-center rounded-full size-10 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
-            <span className="material-symbols-outlined">notifications</span>
-          </button>
+          <div>
+            <p>{userData?.username}</p>
+            <p>{userData?.email}</p>
+            
+          </div>
+          
           <div
             className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
             style={{

@@ -157,6 +157,7 @@ const Dashboard = () => {
                       <th className="px-6 py-3">System</th>
                       <th className="px-6 py-3">Status</th>
                       <th className="px-6 py-3">Date</th>
+                      <th className="px-6 py-3">Assign Technician</th>
                       <th className="px-6 py-3">Details</th>
                     </tr>
                   </thead>
@@ -179,8 +180,10 @@ const Dashboard = () => {
                                 ? "bg-green-900 text-green-300"
                                 : report.status === "pending"
                                   ? "bg-yellow-900 text-yellow-300"
-                                  : report.status === "in progress"
+                                  : report.status === "inprogress"
                                     ? "bg-blue-900 text-blue-300"
+                                    : report.status === "approved"
+                                    ? "bg-green-900 text-green-300"
                                     : "bg-gray-600 text-gray-200"
                                 }`}
                             >
@@ -194,6 +197,7 @@ const Dashboard = () => {
                               ).toLocaleString()
                               : "-"}
                           </td>
+                          <td className="px-6 py-4 text-gray-400">{report.assignedTechnician||"not assign"}</td>
                           <td className="px-6 py-4 text-green-300">
                             <Link onClick={() => showPopup(report)}>View</Link>
                           </td>
@@ -275,7 +279,7 @@ const Dashboard = () => {
                       </p>
                       <textarea
                         value={
-                          selectedReport.message?.split(":")[1] ||
+                          selectedReport.discription ||
                           "No description provided."
                         }
                         readOnly
