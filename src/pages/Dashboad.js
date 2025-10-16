@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "../compornents/Sidebar";
 import { database } from "../firebaseConfig";
 import { ref, onValue, update } from "firebase/database";
+import { Link } from "react-router-dom";
 
 export default function AdminDashboard() {
   const [reports, setReports] = useState([]);
@@ -13,7 +14,7 @@ export default function AdminDashboard() {
   const [selectedTechnician, setSelectedTechnician] = useState("");
   const [adminNote, setAdminNote] = useState("");
 
-  // ✅ Fetch Reports (breakdowns)
+  //  Fetch Reports (breakdowns)
   useEffect(() => {
     const reportsRef = ref(database, "breakdowns");
     const unsubscribe = onValue(reportsRef, (snapshot) => {
@@ -33,7 +34,7 @@ export default function AdminDashboard() {
     return () => unsubscribe();
   }, []);
 
-  // ✅ Fetch Technicians (users)
+  // Fetch Technicians (users)
   useEffect(() => {
     const techRef = ref(database, "users");
     const unsubscribe = onValue(techRef, (snapshot) => {
@@ -64,7 +65,7 @@ export default function AdminDashboard() {
     setFilteredReports(filtered);
   }, [searchTerm, filterStatus, reports]);
 
-  // ✅ Update status in Firebase
+  // Update status in Firebase
   const handleStatusUpdate = async (newStatus) => {
     if (!selectedReport) return;
     const reportRef = ref(database, `breakdowns/${selectedReport.id}`);
@@ -72,7 +73,7 @@ export default function AdminDashboard() {
     alert(`Status updated to ${newStatus}!`);
   };
 
-  // ✅ Assign technician + admin note
+  // Assign technician + admin note
   const handleAssignTechnician = async () => {
     if (!selectedReport) return alert("Select a report first!");
     if (!selectedTechnician) return alert("Please select a technician.");
@@ -88,9 +89,9 @@ export default function AdminDashboard() {
     setAdminNote("");
   };
 
-  // ✅ Summary counts
+  //  Summary counts
   const totalReports = reports.length;
-  const pending = reports.filter((r) => r.status === "Pending").length;
+  const pending = reports.filter((r) => r.status === "pending").length;
   const inProgress = reports.filter((r) => r.status === "inprogress").length;
   const completed = reports.filter((r) => r.status === "approved").length;
 
@@ -115,12 +116,7 @@ export default function AdminDashboard() {
               <span className="material-symbols-outlined mr-2">refresh</span>
               Refresh
             </button>
-            <div className="relative">
-              <span className="material-symbols-outlined text-2xl">notifications</span>
-              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                3
-              </span>
-            </div>
+            
           </div>
         </header>
 
@@ -163,13 +159,12 @@ export default function AdminDashboard() {
                   <p className="text-2xl font-bold">{technicians.length}</p>
                 </div>
               </div>
-              <a
-                href="/manage-technicians"
+              <Link to ="/Technition"
                 className="flex items-center justify-center mt-auto rounded-lg h-10 px-4 bg-green-700 hover:bg-green-600 text-white text-sm font-bold"
               >
                 Manage Technicians
                 <span className="material-symbols-outlined ml-2">arrow_forward</span>
-              </a>
+              </Link>
             </div>
           </div>
 

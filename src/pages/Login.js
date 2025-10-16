@@ -20,6 +20,7 @@ export default function Login() {
 
     // Realtime DB reference
   const usersRef = ref(database, "users");
+//  const usersRef = ref(database, `users/${firebaseUid}`);
 const snapshot = await get(usersRef);
 const allUsers = snapshot.val();
 
@@ -122,12 +123,7 @@ if (userData.role !== "manager") {
           </button>
         </div>
 
-        {/* Footer */}
-        <div className="flex flex-col items-center mt-8">
-          <p className="text-[#617589] dark:text-gray-500 text-xs font-normal leading-normal">
-            © 2025 System Breakdown Information System. All rights reserved.
-          </p>
-        </div>
+       
       </div>
     </div>
   );

@@ -104,8 +104,29 @@ export default function ManageTechnicians() {
     <div className="flex h-screen bg-black text-white font-display relative">
       <Sidebar />
 
-      <main className="flex-1 p-8 overflow-y-auto bg-gray-900 relative">
-        <div className="max-w-4xl mx-auto">
+      <main className="flex-1 overflow-y-auto bg-gray-900 relative">
+
+        <header className="flex flex-wrap justify-between items-center gap-4 p-6 border-b border-gray-700 bg-gray-800 fix">
+          <div className="flex flex-col gap-1">
+            <p className="text-2xl font-bold">Technition Managment</p>
+            <p className="text-gray-400 text-sm">
+              Overview of  technician activity.
+            </p>
+          </div>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => window.location.reload()}
+              className="flex items-center justify-center rounded-lg h-10 px-4 bg-gray-700 hover:bg-gray-600 text-sm font-bold"
+            >
+              <span className="material-symbols-outlined mr-2">refresh</span>
+              Refresh
+            </button>
+
+          </div>
+        </header>
+
+       
+        <div className="max-w-4xl mx-auto  p-8">
           {/* Header */}
           <header className="mb-8 flex justify-between items-center">
             <h1 className="text-4xl font-black tracking-tight">Manage Technicians</h1>
@@ -205,10 +226,11 @@ export default function ManageTechnicians() {
                 </form>
               </section>
             </div>
+            
           )}
 
           {/* Technician Table */}
-          <section className="bg-gray-800 p-6 rounded-lg shadow-md">
+          <section className="bg-gray-800 p-6 rounded-lg shadow-md ">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold">Existing Technicians</h2>
               <div className="relative w-64">
@@ -279,6 +301,7 @@ export default function ManageTechnicians() {
             </div>
           </section>
         </div>
+       
       </main>
     </div>
   );

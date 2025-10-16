@@ -10,7 +10,7 @@ export default function AdminDashboard() {
     profileImage: "https://www.w3schools.com/howto/img_avatar.png",
   });
 
-  // 🔹 Load admin info from Realtime Database (or localStorage fallback)
+  //  Load admin info from Realtime Database (or localStorage fallback)
   useEffect(() => {
     const loadAdminData = async () => {
       try {
@@ -100,19 +100,7 @@ export default function AdminDashboard() {
           <p className="text-sm font-medium">Technicians</p>
         </NavLink>
 
-        <NavLink
-          to="/Settings"
-          className={({ isActive }) =>
-            `flex items-center gap-3 px-3 py-2 rounded-lg transition ${
-              isActive
-                ? "bg-green-600 text-white shadow-lg"
-                : "bg-gray-800 hover:bg-gray-700 text-gray-300"
-            }`
-          }
-        >
-          <span className="material-symbols-outlined">settings</span>
-          <p className="text-sm font-medium">Settings</p>
-        </NavLink>
+        
       </nav>
 
       {/* Logout */}

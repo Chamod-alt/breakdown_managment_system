@@ -106,7 +106,7 @@ export default function AdminDashboard() {
                 {/* Header */}
                 <header className="flex flex-wrap justify-between items-center gap-4 p-6 border-b border-gray-700 bg-gray-900">
                     <div className="flex flex-col gap-1">
-                        <p className="text-2xl font-bold tracking-tight">New/Pending Reports</p>
+                        <p className="text-2xl font-bold tracking-tight"> Reports</p>
                         <p className="text-sm text-gray-400">
                             Real-time view of all incoming system breakdown reports.
                         </p>
@@ -136,8 +136,8 @@ export default function AdminDashboard() {
                                 <option value="all">All</option>
                                 <option value="pending">Pending</option>
                                 <option value="approved">Approved</option>
-                                <option value="in-progress">In Progress</option>
-                                <option value="resolved">Resolved</option>
+                                <option value="inprogress">In Progress</option>
+                                <option value="rejected">Rejected</option>
                             </select>
 
                             <input
@@ -158,12 +158,14 @@ export default function AdminDashboard() {
                                         }`}
                                 >
                                     <div className="flex justify-between items-start">
-                                        <p className="font-bold">#{report.id.slice(-5)}</p>
+                                        <p className="font-bold">{report.id.slice(-5)}</p>
                                         <span
                                             className={`px-2 py-1 text-xs rounded-full ${report.status === "pending"
                                                 ? "bg-yellow-500 text-black"
                                                 : report.status === "approved"
                                                     ? "bg-green-500 text-black"
+                                                :  report.status === "rejected"
+                                                ?  "bg-red-500 text-black" 
                                                     : "bg-gray-500 text-white"
                                                 }`}
                                         >
@@ -196,7 +198,7 @@ export default function AdminDashboard() {
                                 <div>
                                     <div className="flex justify-between items-center">
                                         <h2 className="text-xl font-bold">
-                                            Report #{selectedReport.id.slice(-5)}
+                                            Report {selectedReport.id.slice(-5)}
                                         </h2>
                                         <div className="flex gap-2">
                                             <button
@@ -247,9 +249,11 @@ export default function AdminDashboard() {
 
                                         <span
                                             className={`px-2 py-1 text-xs rounded-full ${selectedReport.status === "pending"
-                                                ? "bg-yellow-500 text-black"
+                                                ? "bg-yellow-500 text-white"
                                                 : selectedReport.status === "approved"
                                                     ? "bg-green-500 text-black"
+                                                : selectedReport.status === "rejected"
+                                                    ? "bg-red-500 text-white"
                                                     : "bg-gray-500 text-white"
                                                 }`}
                                         >
@@ -267,7 +271,7 @@ export default function AdminDashboard() {
                                 <div>
                                     <h3 className="text-sm font-medium text-gray-400">Full Report</h3>
                                     <p className="mt-1 leading-relaxed">
-                                        {selectedReport.description || "No detailed description available."}
+                                        {selectedReport.discription || "No detailed description available."}
                                     </p>
                                 </div>
 
