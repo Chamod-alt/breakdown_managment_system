@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Breakdown Reporting</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#16a34a",           // green for actions/buttons
+            "background-light": "#1f2a37",  // dark background for light mode
+            "background-dark": "#0f1a20",   // main dark mode bg
+            "card-dark": "#15232a"           // card bg in dark mode
+          },
+          fontFamily: {
+            "display": ["Inter", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+
+<body class="bg-background-dark font-display text-white">
+  <div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+    <div class="flex flex-col h-full">
+      <!-- Header -->
+      <header class="flex items-center justify-between border-b border-gray-700 px-10 py-3 bg-background-dark">
+        <div class="flex items-center gap-4 text-white">
+          <div class="size-8 text-primary">
+            <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-2h2v2h-2zm0-4v-6h2v6h-2z"></path>
+            </svg>
+          </div>
+          <h2 class="text-lg font-bold">Breakdown Reporting</h2>
+        </div>
+        <div class="flex flex-1 justify-end gap-4 items-center">
+          <button class="flex items-center justify-center rounded-full h-10 w-10 bg-gray-800 text-white">
+            <span class="material-symbols-outlined">notifications</span>
+          </button>
+          <button class="flex items-center justify-center rounded-full h-10 w-10 bg-gray-800 text-white">
+            <span class="material-symbols-outlined">settings</span>
+          </button>
+          <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA9405eQm_YSmBmL9KWgST26WsyQf4lCS0cM5DmMJwH_0gbo1RlqoYIlAga-8svq9vjCP8f6uu256EJyUTiKVxiZ2M05Yg48qZzcOwZyREq06wBgK11DiAO4E0PDcLiGO7mY4_uaBYFqKCDqwtWgMEPDHPjGvjJ1VK2qamk275H_TDq23YEndpOQe4XSsn6XRAeoUcfHG2MXAD3WeSDUR7ouj1mdy6s9alS5AkOr20ejiqSE1E7kSKKcb-L_l729HoJ7AbntQc-zpA");'>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main -->
+      <main class="px-4 md:px-10 lg:px-20 py-8">
+        <div class="max-w-4xl mx-auto">
+          <div class="flex flex-wrap gap-2 mb-6 text-gray-400 text-sm font-medium">
+            <a href="#">Dashboard</a>
+            <span>/</span>
+            <a href="#">Breakdowns</a>
+            <span>/</span>
+            <span class="text-white">BR-007</span>
+          </div>
+
+          <div class="mb-8">
+            <h1 class="text-3xl font-black text-white">Update Breakdown Report BR-007</h1>
+            <p class="text-gray-300 mt-1">Change the status and add notes for the reported issue.</p>
+          </div>
+
+          <!-- Report Summary Card -->
+          <div class="bg-card-dark rounded-xl shadow-sm border border-gray-700 p-6 mb-8">
+            <h3 class="text-lg font-bold text-white mb-4">Report Summary</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+              <div class="flex flex-col">
+                <p class="text-gray-400 text-sm">Report ID</p>
+                <p class="text-white">BR-007</p>
+              </div>
+              <div class="flex flex-col">
+                <p class="text-gray-400 text-sm">Reported by</p>
+                <p class="text-white">John Doe</p>
+              </div>
+              <div class="flex flex-col">
+                <p class="text-gray-400 text-sm">Date reported</p>
+                <p class="text-white">2023-10-27</p>
+              </div>
+              <div class="flex flex-col">
+                <p class="text-gray-400 text-sm">Equipment</p>
+                <p class="text-white">Excavator EX-123</p>
+              </div>
+              <div class="sm:col-span-2 flex flex-col">
+                <p class="text-gray-400 text-sm">Initial Description</p>
+                <p class="text-white">The main hydraulic pump is making a loud grinding noise and leaking fluid.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Update Status -->
+          <div class="bg-card-dark rounded-xl shadow-sm border border-gray-700 p-6">
+            <div class="mb-6">
+              <h3 class="text-lg font-bold text-white mb-4">Update Status</h3>
+              <div class="flex flex-col gap-3 text-white">
+                <label class="flex items-center gap-4 rounded-lg border border-gray-600 p-4 cursor-pointer">
+                  <input type="radio" name="status_update"
+                    class="h-5 w-5 border-2 border-gray-500 bg-transparent text-primary focus:ring-primary" />
+                  <div class="flex grow flex-col">
+                    <p class="font-medium">Pending</p>
+                    <p class="text-sm text-gray-400">The issue has been reported but not yet assigned.</p>
+                  </div>
+                  <div class="w-3 h-3 rounded-full bg-gray-400"></div>
+                </label>
+                <label class="flex items-center gap-4 rounded-lg border border-gray-600 p-4 cursor-pointer">
+                  <input type="radio" name="status_update" checked
+                    class="h-5 w-5 border-2 border-gray-500 bg-transparent text-primary focus:ring-primary" />
+                  <div class="flex grow flex-col">
+                    <p class="font-medium">In Progress</p>
+                    <p class="text-sm text-gray-400">A technician is actively working on the issue.</p>
+                  </div>
+                  <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                </label>
+                <label class="flex items-center gap-4 rounded-lg border border-gray-600 p-4 cursor-pointer">
+                  <input type="radio" name="status_update"
+                    class="h-5 w-5 border-2 border-gray-500 bg-transparent text-primary focus:ring-primary" />
+                  <div class="flex grow flex-col">
+                    <p class="font-medium">Completed</p>
+                    <p class="text-sm text-gray-400">The issue has been resolved.</p>
+                  </div>
+                  <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                </label>
+                <label class="flex items-center gap-4 rounded-lg border border-gray-600 p-4 cursor-pointer">
+                  <input type="radio" name="status_update"
+                    class="h-5 w-5 border-2 border-gray-500 bg-transparent text-primary focus:ring-primary" />
+                  <div class="flex grow flex-col">
+                    <p class="font-medium">Rejected</p>
+                    <p class="text-sm text-gray-400">The report is not a valid issue.</p>
+                  </div>
+                  <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="mb-6">
+              <label class="block text-lg font-bold text-white mb-4" for="update-notes">Update Notes</label>
+              <textarea id="update-notes" name="update-notes" rows="4"
+                class="block w-full rounded-lg border-gray-600 bg-card-dark text-white focus:border-primary focus:ring-primary"
+                placeholder="Add any relevant notes about the status update..."></textarea>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex justify-end gap-3 mt-8">
+              <button class="px-6 py-2.5 rounded-lg text-sm font-semibold bg-gray-700 text-white hover:bg-gray-600 transition-colors"
+                type="button">Cancel</button>
+              <button class="px-6 py-2.5 rounded-lg text-sm font-semibold bg-primary text-white hover:bg-primary/90 transition-colors"
+                type="submit">Update Status</button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</body>
+
+</html>

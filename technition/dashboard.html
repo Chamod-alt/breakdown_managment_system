@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Technician Dashboard</title>
+
+  <!-- Tailwind & Fonts -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+  <!-- Firebase SDKs -->
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#16a34a",
+            "background-light": "#1f2a37",
+            "background-dark": "#0f1a20",
+            "card-light": "#2c3e50",
+            "card-dark": "#15232a"
+          },
+          fontFamily: {
+            "display": ["Inter", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24;
+    }
+  </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-white">
+  <div class="flex min-h-screen">
+
+    <!-- Sidebar -->
+<aside class="w-64 bg-card-light dark:bg-card-dark flex flex-col h-screen">
+  <!-- Header -->
+  <div class="flex items-center gap-4 px-6 py-4 text-primary border-b border-gray-700">
+    <span class="material-symbols-outlined text-3xl">build_circle</span>
+    <h2 class="text-white text-lg font-bold">System Breakdown</h2>
+  </div>
+
+  <!-- Nav Links -->
+  <nav class="flex flex-col flex-1 px-4 mt-4">
+    <nav class="flex-1  space-y-2">
+        <a class="flex items-center gap-3 px-4 py-2 rounded-lg text-text-secondary-dark hover:bg-primary/20 hover:text-primary" href="dashboard.html">
+          <span class="material-symbols-outlined">dashboard</span>
+          <span class="text-sm font-medium">Dashboard</span>
+        </a>
+        <a class="flex items-center gap-3 px-4 py-2 rounded-lg bg-primary/20 text-primary" href="Profile.html">
+          <span class="material-symbols-outlined">person</span>
+          <span class="text-sm font-medium">My Profile</span>
+        </a>
+        
+      </nav>
+    <!-- Push Logout to Bottom -->
+    <div class="mt-auto mb-4">
+      <button class="w-full px-4 py-2 rounded-lg bg-primary text-white font-semibold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+        <span class="material-symbols-outlined text-lg">logout</span>
+        Logout
+      </button>
+    </div>
+  </nav>
+</aside>
+
+
+    <!-- Main Content -->
+    <main class="flex-1 px-10 py-8">
+      <div class="max-w-7xl mx-auto">
+        <p class="text-4xl font-black mb-6 text-white">Technician Dashboard</p>
+
+        <!-- Summary Cards -->
+        <div id="statsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+          <div class="flex flex-col gap-2 rounded-lg p-6 border border-[#23303b] bg-card-light dark:bg-card-dark">
+            <p class="text-[#a0b3c6] text-base font-medium">Total Assigned</p>
+            <p id="totalAssigned" class="text-white text-3xl font-bold">0</p>
+          </div>
+          <div class="flex flex-col gap-2 rounded-lg p-6 border border-[#23303b] bg-card-light dark:bg-card-dark">
+            <p class="text-[#a0b3c6] text-base font-medium">New</p>
+            <p id="newCount" class="text-white text-3xl font-bold">0</p>
+          </div>
+          <div class="flex flex-col gap-2 rounded-lg p-6 border border-[#23303b] bg-card-light dark:bg-card-dark">
+            <p class="text-[#a0b3c6] text-base font-medium">In Progress</p>
+            <p id="progressCount" class="text-white text-3xl font-bold">0</p>
+          </div>
+          <div class="flex flex-col gap-2 rounded-lg p-6 border border-[#23303b] bg-card-light dark:bg-card-dark">
+            <p class="text-[#a0b3c6] text-base font-medium">Awaiting Parts</p>
+            <p id="awaitCount" class="text-white text-3xl font-bold">0</p>
+          </div>
+          <div class="flex flex-col gap-2 rounded-lg p-6 border border-[#23303b] bg-card-light dark:bg-card-dark">
+            <p class="text-[#a0b3c6] text-base font-medium">Resolved</p>
+            <p id="resolvedCount" class="text-white text-3xl font-bold">0</p>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="rounded-xl shadow-sm p-6 overflow-x-auto bg-card-light dark:bg-card-dark">
+          <table class="w-full text-left">
+            <thead class="border-b border-[#23303b]">
+              <tr class="text-sm text-[#a0b3c6]">
+                <th class="py-3 px-4 font-medium">Report ID</th>
+                <th class="py-3 px-4 font-medium">Item</th>
+                <th class="py-3 px-4 font-medium">Description</th>
+                <th class="py-3 px-4 font-medium">Location</th>
+                <th class="py-3 px-4 font-medium">Status</th>
+                
+                <th class="py-3 px-4 font-medium">Time</th>
+                <th class="py-3 px-4 font-medium">View</th>
+              </tr>
+            </thead>
+            <tbody id="breakdownTableBody">
+              <tr>
+                <td colspan="7" class="text-center py-4 text-[#a0b3c6]">Loading reports...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+
+
+  <!-- Popup Modal -->
+<div id="popupModal"
+  class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50 overflow-y-auto scrollbar-thin">
+  <div class="bg-card-dark border border-gray-700 rounded-xl shadow-lg w-full max-w-2xl p-6 text-white relative mt-72 m">
+    <button 
+      class="absolute top-3 right-3 text-gray-400 hover:text-white text-xl font-bold"
+      onclick="closePopup()">&times;</button>
+
+    <h2 id="popupTitle" class="text-2xl font-bold mb-4">Breakdown Details</h2>
+
+   <!-- Report Summary Section -->
+<div class="bg-card-dark rounded-xl shadow-sm border border-gray-700 p-6 mb-8">
+  <h3 class="text-lg font-bold text-white mb-4">Breakdown Summary</h3>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
+    <div class="flex flex-col">
+      <p class="text-gray-400 text-sm">Breakdown ID</p>
+      <p class="text-white font-medium" id="popupId">-</p>
+    </div>
+
+    <div class="flex flex-col">
+      <p class="text-gray-400 text-sm">Item / Equipment</p>
+      <p class="text-white font-medium" id="popupItem">-</p>
+    </div>
+
+    <div class="flex flex-col">
+      <p class="text-gray-400 text-sm">Location</p>
+      <p class="text-white font-medium" id="popupLocation">-</p>
+    </div>
+
+    <div class="flex flex-col">
+      <p class="text-gray-400 text-sm">Current Status</p>
+      <p id="popupStatus" class="text-green-400 font-semibold">-</p>
+    </div>
+
+    <div class="flex flex-col">
+      <p class="text-gray-400 text-sm">Receiver Topic</p>
+      <p class="text-white font-medium" id="popuptopic">-</p>
+    </div>
+
+    <div class="flex flex-col">
+      <p class="text-gray-400 text-sm">Reporter</p>
+      <p class="text-white font-medium" id="popupReporter">-</p>
+    </div>
+
+    <div class="sm:col-span-2 flex flex-col">
+      <p class="text-gray-400 text-sm">Reporter Description</p>
+      <p class="text-white font-medium leading-relaxed" id="popupReporterDiscrpiton">-</p>
+    </div>
+
+    <div class="sm:col-span-2 flex flex-col">
+      <p class="text-gray-400 text-sm">Admin Description</p>
+      <p class="text-white font-medium leading-relaxed" id="popupDescription">-</p>
+    </div>
+
+    <div class="sm:col-span-2 flex flex-col">
+      <p class="text-gray-400 text-sm">Your Description</p>
+      <p class="text-white font-medium leading-relaxed" id="popupupdateNote">-</p>
+    </div>
+
+  </div>
+
+
+
+</div>
+
+
+    <div class="mb-6">
+      <label class="block mb-2 font-semibold">Update Status</label>
+      <select id="updateStatus" class="w-full rounded-lg border border-gray-600 bg-[#1a2b34] p-2">
+        <option value="new">New</option>
+        <option value="in progress">In Progress</option>
+        <option value="awaiting parts">Awaiting Parts</option>
+        <option value="resolved">Resolved</option>
+      </select>
+    </div>
+
+    <div class="mb-6">
+      <label class="block mb-2 font-semibold">Add Note</label>
+      <textarea id="updateNote"
+        class="w-full rounded-lg border border-gray-600 bg-[#1a2b34] p-2"
+        rows="4"
+        placeholder="Add update notes..."></textarea>
+    </div>
+
+    <div class="flex justify-end gap-3">
+      <button 
+        class="px-5 py-2 rounded-lg bg-gray-700 hover:bg-gray-600"
+        onclick="closePopup()">Cancel</button>
+      <button 
+        class="px-5 py-2 rounded-lg bg-primary hover:bg-green-600"
+        onclick="saveUpdate()">Save</button>
+    </div>
+  </div>
+</div>
+
+
+  <script>
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyC6oz8ByvNsHZTVkWlO_s1OKysSRXI06Ho",
+      authDomain: "breakdown-managment-system.firebaseapp.com",
+      databaseURL: "https://breakdown-managment-system-default-rtdb.firebaseio.com",
+      projectId: "breakdown-managment-system",
+      storageBucket: "breakdown-managment-system.appspot.com",
+      messagingSenderId: "1021734538757",
+      appId: "1:1021734538757:web:679094e39652c0912f566c",
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    // Table & Card Elements
+    const tableBody = document.getElementById("breakdownTableBody");
+    const totalAssigned = document.getElementById("totalAssigned");
+    const newCount = document.getElementById("newCount");
+    const progressCount = document.getElementById("progressCount");
+    const awaitCount = document.getElementById("awaitCount");
+    const resolvedCount = document.getElementById("resolvedCount");
+
+    //  Auth State Listener
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        console.log("Logged in as:", user.email);
+
+        // You can map UID → technicianId if stored separately
+        const technicianId = user.email.split("@")[0]; // example mapping
+
+        loadBreakdowns(technicianId);
+      } else {
+        console.warn("No user logged in, redirecting...");
+        setTimeout(() => {
+          window.location.href = "login.html";
+        }, 500);
+      }
+    });
+
+    //  Load Realtime Database Breakdown Data
+    function loadBreakdowns(technicianId) {
+      db.ref("breakdowns").on("value", (snapshot) => {
+        const data = snapshot.val();
+        tableBody.innerHTML = "";
+
+        let total = 0, newTasks = 0, inProgress = 0, awaiting = 0, resolved = 0;
+
+        if (!data) {
+          tableBody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-[#a0b3c6]">No reports found.</td></tr>`;
+          totalAssigned.textContent = newCount.textContent = progressCount.textContent = awaitCount.textContent = resolvedCount.textContent = "0";
+          return;
+        }
+
+        Object.entries(data).forEach(([id, item]) => {
+          if (item.assignedTechnician !== technicianId) return; // filter by logged-in tech
+
+          total++;
+          const status = (item.status || "").toLowerCase();
+          if (status === "new") newTasks++;
+          else if (status === "in progress") inProgress++;
+          else if (status === "awaiting parts") awaiting++;
+          else if (status === "resolved") resolved++;
+
+          const updated = new Date(item.timestamps?.updated || item.timestamps?.created || Date.now());
+          const row = `
+          <tr class="border-b border-[#23303b] hover:bg-[#16232c]">
+            <td class="py-4 px-4 font-medium text-primary">${id}</td>
+            <td class="py-4 px-4">${item.itemName || "-"}</td>
+            <td class="py-4 px-4">${item.message || "-"}</td>
+            <td class="py-4 px-4">${item.location || "-"}</td>
+            <td class="py-4 px-4"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-900/50 text-green-300">${item.status || "-"}</span></td>
+            
+            <td class="py-4 px-4">${updated.toLocaleString()}</td>
+             <td class="py-4 px-4">
+  <button 
+    class="text-green-400 hover:text-green-300 underline"
+    onclick="openPopup('${id}', ${JSON.stringify(item).replace(/"/g, '&quot;')})">
+    View
+  </button>
+</td>
+          </tr>`;
+          tableBody.innerHTML += row;
+        });
+
+        //  Update card stats
+        totalAssigned.textContent = total;
+        newCount.textContent = newTasks;
+        progressCount.textContent = inProgress;
+        awaitCount.textContent = awaiting;
+        resolvedCount.textContent = resolved;
+      });
+    }
+
+    //  Logout
+    function logoutUser() {
+      auth.signOut().then(() => {
+        window.location.href = "login.html";
+      });
+    }
+
+    //popup form 
+
+
+
+    let selectedId = null; // to store current record ID
+
+function openPopup(id, item) {
+  selectedId = id;
+  document.getElementById("popupId").textContent = id;
+  document.getElementById("popupItem").textContent = item.itemName || "-";
+  document.getElementById("popupLocation").textContent = item.location || "-";
+  document.getElementById("popupStatus").textContent = item.status || "-";
+  document.getElementById("popupDescription").textContent = item.adminNote || "-";
+  document.getElementById("popupReporter").textContent = item.reporterName || "-";
+  document.getElementById("popupReporterDiscrpiton").textContent=item.discription || "-";
+  document.getElementById("popuptopic").textContent =item.message || "-";
+  document.getElementById("popupupdateNote").textContent = item.updateNote || " ";
+ 
+  // Set current status in dropdown
+  document.getElementById("updateStatus").value = (item.status || "new").toLowerCase();
+  document.getElementById("updateNote").value = item.updateNote || " ";
+ 
+
+  // Show popup
+  document.getElementById("popupModal").classList.remove("hidden");
+  document.getElementById("popupModal").classList.add("flex");
+}
+
+function closePopup() {
+  document.getElementById("popupModal").classList.add("hidden");
+  document.getElementById("popupModal").classList.remove("flex");
+}
+
+//  Save updates back to Firebase
+function saveUpdate() {
+  if (!selectedId) return alert("No record selected!");
+
+  const newStatus = document.getElementById("updateStatus").value;
+  const newNote = document.getElementById("updateNote").value;
+
+  // Update Realtime Database
+  firebase.database().ref("breakdowns/" + selectedId).update({
+    status: newStatus,
+    updateNote: newNote,
+    updatedAt: Date.now()
+  })
+  .then(() => {
+    alert("Update saved successfully!");
+    closePopup();
+  })
+  .catch((error) => {
+    console.error(error);
+    alert("Error saving update: " + error.message);
+  });
+}
+  </script>
+
+
+</body>
+
+</html>
