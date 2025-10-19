@@ -64,7 +64,7 @@ const Dashboard = () => {
       location,
       message: `${issueTitle}`,
       discription:description,
-      status: "pending",
+      status: "Deleverd to admin",
       assignedTechnician: null,
       fixDetails: null,
       timestamps: {
