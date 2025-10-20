@@ -12,6 +12,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
 <script>
     tailwind.config = {
@@ -53,11 +54,12 @@
 <body class="bg-background-dark font-display text-text-dark">
 
 <div class="relative flex min-h-screen w-full flex-col items-center justify-center overflow-x-hidden">
-    <div class="flex flex-col max-w-lg w-full">
+    <div class="flex flex-col max-w-lg w-full border border-green-700
+p-2">
         <!-- Header -->
         <div class="flex flex-col gap-3 p-4 items-center text-center">
             <div class="flex items-center gap-3">
-                <span class="material-symbols-outlined text-primary text-5xl">emergency_home</span>
+                <span class="material-symbols-outlined text-green-400 text-5xl">emergency_home</span>
                 <p class="text-text-dark text-4xl font-black leading-tight">System Breakdown Information System</p>
             </div>
             <p class="text-text-secondary-dark text-lg font-normal">Technician Login</p>
@@ -83,33 +85,20 @@
             </label>
 
             <!-- Login Button -->
-            <button id="loginBtn" class="flex w-full h-12 items-center justify-center bg-green-500 text-white text-base font-bold rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:ring-offset-background-dark">
+            <button id="loginBtn" class="flex w-full h-12 items-center justify-center bg-green-500 text-white text-base font-bold rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:ring-offset-background-dark">
                 Login
             </button>
 
             <!-- Message -->
             <p id="loginMessage" class="text-red-500 text-sm mt-2 text-center"></p>
         </div>
-
-        <!-- Footer Links -->
-        <div class="flex flex-col items-center gap-3 px-4 py-3">
-            <a class="text-primary text-sm font-medium hover:underline" href="#">Forgot Password?</a>
-            <p class="text-text-secondary-dark text-sm">
-                Don't have an account? 
-                <a class="font-bold text-primary hover:underline" href="#">Register</a>
-            </p>
-        </div>
-
-        <div class="flex flex-col items-center mt-8">
-            <p class="text-text-secondary-dark text-xs">© 2023 System Breakdown Information System. All rights reserved.</p>
-            <a class="text-text-secondary-dark text-xs hover:underline" href="#">Support</a>
-        </div>
+        
     </div>
 </div>
 
 <script>
-    
-  // ✅ Firebase Configuration
+  /*  
+  // Firebase Configuration
   const firebaseConfig = {
     apiKey: "AIzaSyC6oz8ByvNsHZTVkWlO_s1OKysSRXI06Ho",
     authDomain: "breakdown-managment-system.firebaseapp.com",
@@ -120,11 +109,11 @@
     appId: "1:1021734538757:web:679094e39652c0912f566c",
   };
 
-  // ✅ Initialize Firebase
+  // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
 
-  // ✅ Login Button Logic
+  //  Login Button Logic
   const loginBtn = document.getElementById("loginBtn");
   const loginMessage = document.getElementById("loginMessage");
 
@@ -151,6 +140,82 @@
         console.error(error);
       });
   });
+  */
+ 
+  // Firebase Configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyC6oz8ByvNsHZTVkWlO_s1OKysSRXI06Ho",
+    authDomain: "breakdown-managment-system.firebaseapp.com",
+    databaseURL: "https://breakdown-managment-system-default-rtdb.firebaseio.com",
+    projectId: "breakdown-managment-system",
+    storageBucket: "breakdown-managment-system.appspot.com",
+    messagingSenderId: "1021734538757",
+    appId: "1:1021734538757:web:679094e39652c0912f566c",
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.database();
+
+  // Login Button Logic
+  const loginBtn = document.getElementById("loginBtn");
+  const loginMessage = document.getElementById("loginMessage");
+
+  loginBtn.addEventListener("click", () => {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    if (!email || !password) {
+      loginMessage.textContent = "Please enter email and password.";
+      return;
+    }
+
+    auth.signInWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+
+        // Now check user's role in Realtime Database
+        const usersRef = db.ref("users");
+
+        usersRef.once("value")
+          .then((snapshot) => {
+            let foundUser = null;
+
+            snapshot.forEach((childSnapshot) => {
+              const userData = childSnapshot.val();
+              if (userData.authUID === user.uid) {
+                foundUser = userData;
+              }
+            });
+
+            if (!foundUser) {
+              auth.signOut();
+              loginMessage.textContent = "User not found in database.";
+              return;
+            }
+
+            // ✅ Allow only technicians
+            if (foundUser.role === "technician") {
+              alert("Login successful! Welcome Technician.");
+              window.location.href = "dashboard.html"; // redirect to technician dashboard
+            } else {
+              auth.signOut();
+              loginMessage.textContent = "Access denied! Only technicians can log in.";
+            }
+          })
+          .catch((error) => {
+            console.error("Error checking role:", error);
+            loginMessage.textContent = "Error verifying user role.";
+          });
+      })
+      .catch((error) => {
+        loginMessage.textContent = error.message;
+        console.error(error);
+      });
+  });
+
+
 </script>
 
 </body>

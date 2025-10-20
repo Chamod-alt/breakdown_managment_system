@@ -45,39 +45,40 @@
 
 <body class="bg-background-dark font-display text-text-dark">
   <div class="flex min-h-screen">
-    <!-- SideNavBar -->
+    
     <!-- Sidebar -->
     <aside class="w-64 bg-card-light dark:bg-card-dark flex flex-col h-screen">
-      <!-- Header -->
-      <div class="flex items-center gap-4 px-6 py-4 text-primary border-b border-gray-700">
-        <span class="material-symbols-outlined text-3xl">build_circle</span>
-        <h2 class="text-white text-lg font-bold">System Breakdown</h2>
-      </div>
+  <!-- Header -->
+  <div class="flex items-center gap-4 px-6 py-4 text-primary border-b border-gray-700">
+    <span class="material-symbols-outlined text-3xl">build_circle</span>
+    <h2 class="text-white text-lg font-bold">System Breakdown</h2>
+  </div>
 
-      <!-- Nav Links -->
-      <nav class="flex flex-col flex-1 px-4 mt-4">
-        <nav class="flex-1  space-y-2">
-          <a class="flex items-center gap-3 px-4 py-2 rounded-lg text-text-secondary-dark hover:bg-primary/20 hover:text-primary"
-            href="dashboard.html">
-            <span class="material-symbols-outlined">dashboard</span>
-            <span class="text-sm font-medium">Dashboard</span>
-          </a>
-          <a class="flex items-center gap-3 px-4 py-2 rounded-lg bg-primary/20 text-primary" href="Profile.html">
-            <span class="material-symbols-outlined">person</span>
-            <span class="text-sm font-medium">My Profile</span>
-          </a>
+  <!-- Nav Links -->
+  <nav class="flex flex-col flex-1 px-4 mt-4">
+    <nav class="flex-1 space-y-2">
+      <a id="dashboardLink" class="flex items-center gap-3 px-4 py-2 rounded-lg text-text-secondary-dark hover:bg-primary/20 hover:text-primary"
+         href="dashboard.html">
+        <span class="material-symbols-outlined">dashboard</span>
+        <span class="text-sm font-medium">Dashboard</span>
+      </a>
+      <a id="profileLink" class="flex items-center gap-3 px-4 py-2 rounded-lg text-text-secondary-dark hover:bg-primary/20 hover:text-primary"
+         href="Profile.html">
+        <span class="material-symbols-outlined">person</span>
+        <span class="text-sm font-medium">My Profile</span>
+      </a>
+    </nav>
 
-        </nav>
-        <!-- Push Logout to Bottom -->
-        <div class="mt-auto mb-4">
-          <button
-            class="w-full px-4 py-2 rounded-lg bg-primary text-white font-semibold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
-            <span class="material-symbols-outlined text-lg">logout</span>
-            Logout
-          </button>
-        </div>
-      </nav>
-    </aside>
+    <!-- Push Logout to Bottom -->
+    <div class="mt-auto mb-4">
+      <button id="logoutBtn"
+              class="w-full px-4 py-2 rounded-lg bg-primary text-white font-semibold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+        <span class="material-symbols-outlined text-lg">logout</span>
+        Logout
+      </button>
+    </div>
+  </nav>
+</aside>
 
 
     <!-- Main Content -->
@@ -196,6 +197,8 @@
 
 
   <script type="module">
+
+    /*
     // Import Firebase SDKs
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -352,6 +355,165 @@ updatePasswordBtn.addEventListener("click", async () => {
     alert("Error: " + error.message);
   }
 });
+
+
+
+ // Highlight active link based on current page
+  const currentPage = window.location.pathname.split("/").pop(); // e.g., 'dashboard.html'
+  if (currentPage === "dashboard.html") {
+    document.getElementById("dashboardLink").classList.add("bg-primary/20", "text-primary");
+  } else if (currentPage === "Profile.html") {
+    document.getElementById("profileLink").classList.add("bg-primary/20", "text-primary");
+  }
+
+  // Ensure user is logged in
+  auth.onAuthStateChanged((user) => {
+    if (!user) {
+      window.location.href = "login.html"; // redirect if not logged in
+    }
+  });
+
+  // Logout
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+    auth.signOut().then(() => {
+      window.location.href = "login.html";
+    });
+  });
+*/
+
+
+
+
+
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, EmailAuthProvider, reauthenticateWithCredential, updatePassword } 
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC6oz8ByvNsHZTVkWlO_s1OKysSRXI06Ho",
+    authDomain: "breakdown-managment-system.firebaseapp.com",
+    databaseURL: "https://breakdown-managment-system-default-rtdb.firebaseio.com",
+    projectId: "breakdown-managment-system",
+    storageBucket: "breakdown-managment-system.firebasestorage.app",
+    messagingSenderId: "1021734538757",
+    appId: "1:1021734538757:web:679094e39652c0912f566c",
+    measurementId: "G-171E9J06HV"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
+
+  // DOM Elements
+  const NameInput = document.getElementById("Name");
+  const RoleInput = document.getElementById("Role");
+  const emailInput = document.getElementById("email");
+  const phoneInput = document.getElementById("phone");
+  const saveBtn = document.getElementById("saveBtn");
+  const currentPasswordInput = document.getElementById("currentPassword");
+  const newPasswordInput = document.getElementById("newPassword");
+  const confirmPasswordInput = document.getElementById("confirmPassword");
+  const updatePasswordBtn = document.getElementById("updatePasswordBtn");
+  const dashboardLink = document.getElementById("dashboardLink");
+  const profileLink = document.getElementById("profileLink");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  // Highlight active link
+  const currentPage = window.location.pathname.split("/").pop();
+  if (currentPage === "dashboard.html") dashboardLink.classList.add("bg-primary/20", "text-primary");
+  if (currentPage === "Profile.html") profileLink.classList.add("bg-primary/20", "text-primary");
+
+  // Auth listener
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      // Only redirect, no alert
+      window.location.href = "login.html";
+      return;
+    }
+
+    // Fetch user profile
+    try {
+      const usersRef = ref(db, "users");
+      const snapshot = await get(usersRef);
+      if (!snapshot.exists()) return;
+
+      const users = snapshot.val();
+      let foundUser = null;
+      for (let key in users) {
+        if (users[key].authUID === user.uid) {
+          foundUser = { key, ...users[key] };
+          break;
+        }
+      }
+
+      if (!foundUser) return;
+
+      // Fill profile form
+      NameInput.value = foundUser.name || "";
+      RoleInput.value = foundUser.role || "";
+      emailInput.value = foundUser.email || "";
+      phoneInput.value = foundUser.phone || "";
+
+      // Save changes
+      saveBtn.addEventListener("click", async () => {
+        const userRef = ref(db, "users/" + foundUser.key);
+        try {
+          await update(userRef, {
+            name: NameInput.value,
+            role: RoleInput.value,
+            phone: phoneInput.value
+          });
+          alert("Profile updated successfully!");
+        } catch (err) {
+          alert("Error updating profile: " + err.message);
+        }
+      });
+
+    } catch (err) {
+      console.error("Error fetching user data:", err);
+    }
+  });
+
+  // Change password
+  updatePasswordBtn.addEventListener("click", async () => {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const currentPassword = currentPasswordInput.value;
+    const newPassword = newPasswordInput.value;
+    const confirmPassword = confirmPasswordInput.value;
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      alert("Please fill in all fields!");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      alert("New passwords do not match!");
+      return;
+    }
+
+    try {
+      const credential = EmailAuthProvider.credential(user.email, currentPassword);
+      await reauthenticateWithCredential(user, credential);
+      await updatePassword(user, newPassword);
+      alert("Password updated successfully!");
+      currentPasswordInput.value = "";
+      newPasswordInput.value = "";
+      confirmPasswordInput.value = "";
+    } catch (err) {
+      console.error(err);
+      alert("Error: " + err.message);
+    }
+  });
+
+  // Logout
+  logoutBtn.addEventListener("click", () => {
+    auth.signOut().then(() => {
+      window.location.href = "login.html";
+    });
+  });
+
 
   </script>
 
