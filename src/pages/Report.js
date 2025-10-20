@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ref, onValue, update } from "firebase/database";
 import { database } from "../firebaseConfig";
 import Sidebar from "../compornents/Sidebar";
+import emailjs from "emailjs-com";
 
 export default function AdminDashboard() {
     const [reports, setReports] = useState([]);
@@ -57,7 +58,7 @@ export default function AdminDashboard() {
         await update(reportRef, { status: newStatus });
         alert(`Status updated to ${newStatus}!`);
     };
-
+{/*
     //  Assign technician and add admin note
     const handleAssignTechnician = async () => {
         if (!selectedReport) return alert("Select a report first!");
@@ -67,12 +68,72 @@ export default function AdminDashboard() {
         await update(reportRef, {
             assignedTechnician: selectedTechnician,
             adminNote: adminNote || "",
+            status: "Deleverd to technition"
         });
 
         alert("Technician assigned successfully!");
         setSelectedTechnician("");
         setAdminNote("");
     };
+
+    */}
+    
+
+    // Assign technician and send email notification
+const handleAssignTechnician = async () => {
+  if (!selectedReport) return alert("Select a report first!");
+  if (!selectedTechnician) return alert("Please select a technician.");
+
+  try {
+    //  Update in Firebase
+    const reportRef = ref(database, `breakdowns/${selectedReport.id}`);
+    await update(reportRef, {
+      assignedTechnician: selectedTechnician,
+      adminNote: adminNote || "",
+      status: "Deleverd to technition"
+    });
+
+    // Find the technician email from list
+    const technician = technicians.find(
+      (tech) => tech.name === selectedTechnician
+    );
+
+    if (technician && technician.email) {
+      // EmailJS: prepare email template parameters
+      const templateParams = {
+        to_email: technician.email,
+        technician_name: selectedTechnician,
+        report_id: selectedReport.id,
+        item_name:selectedReport.itemName,
+        report_location: selectedReport.location,
+        report_message: selectedReport.message,
+        admin_note: adminNote || "No additional note",
+        technician_email: technician.email,
+        year: new Date().getFullYear(),
+      };
+
+      //  Send email via EmailJS
+      await emailjs.send(
+        "service_x8sb3iq",         // Replace with your EmailJS Service ID
+        "template_jt5a5zq",        // Replace with your EmailJS Template ID
+        templateParams,
+        "QZJ4qf0aZmug7dhTA"          //  Replace with your EmailJS Public Key
+      )
+
+      alert(`Technician ${selectedTechnician} assigned and notified by email!`);
+    } else {
+      alert("Technician email not found in database!");
+    }
+
+    //  Reset inputs
+    setSelectedTechnician("");
+    setAdminNote("");
+  } catch (error) {
+    console.error("Error assigning technician:", error);
+    alert("Error assigning technician. Check console for details.");
+  }
+};
+
 
     useEffect(() => {
         const techRef = ref(database, "users");
@@ -135,9 +196,11 @@ export default function AdminDashboard() {
                             >
                                 <option value="all">All</option>
                                 <option value="pending">Pending</option>
-                                <option value="approved">Approved</option>
+                                <option value="complete">complete</option>
                                 <option value="inprogress">In Progress</option>
                                 <option value="rejected">Rejected</option>
+                                <option value="Deleverd to admin">new</option>
+                                <option value="Deleverd to technition">deleverd</option>
                             </select>
 
                             <input
@@ -162,14 +225,23 @@ export default function AdminDashboard() {
                                         <span
                                             className={`px-2 py-1 text-xs rounded-full ${report.status === "pending"
                                                 ? "bg-yellow-500 text-black"
-                                                : report.status === "approved"
-                                                    ? "bg-green-500 text-black"
-                                                :  report.status === "rejected"
-                                                ?  "bg-red-500 text-black" 
-                                                    : "bg-gray-500 text-white"
+                                                : report.status === "completed"
+                                                    ? "bg-green-500 text-white"
+                                                    : report.status === "rejected"
+                                                        ? "bg-red-500 text-black"
+                                                        : report.status === "Deleverd to admin"
+                                                            ? "bg-blue-500 text-white"
+                                                        : report.status === "Deleverd to technition"
+                                                            ? "bg-yellow-500 text-black"
+                                                             : report.status === "resolved"
+                                                            ? "bg-green-500 text-white"
+                                                            : "bg-gray-500 text-white"
+
                                                 }`}
                                         >
-                                            {report.status}
+                                            {/*{report.status || "new"}*/}
+
+                                            {report.status === "Deleverd to admin" ? "New" : report.status && report.status === "Deleverd to technition" ? "deleverd" : report.status}
                                         </span>
                                     </div>
                                     <p className="mt-1 text-sm font-medium">{report.itemName}</p>
@@ -201,7 +273,7 @@ export default function AdminDashboard() {
                                             Report {selectedReport.id.slice(-5)}
                                         </h2>
                                         <div className="flex gap-2">
-                                            <button
+                                           {/* <button
                                                 onClick={() => handleStatusUpdate("approved")}
                                                 className="rounded-lg h-10 px-4 bg-green-500 text-white text-sm font-bold hover:bg-green-600"
                                             >
@@ -213,6 +285,7 @@ export default function AdminDashboard() {
                                             >
                                                 In Progress
                                             </button>
+                                            */}
                                             <button
                                                 onClick={() => handleStatusUpdate("rejected")}
                                                 className="rounded-lg h-10 px-4 bg-red-500 text-white text-sm font-bold hover:bg-red-600"
@@ -245,25 +318,30 @@ export default function AdminDashboard() {
                                     </div>
                                     <div>
                                         <h3 className="text-sm font-medium text-gray-400">Status</h3>
-                                        
+
 
                                         <span
                                             className={`px-2 py-1 text-xs rounded-full ${selectedReport.status === "pending"
                                                 ? "bg-yellow-500 text-white"
-                                                : selectedReport.status === "approved"
+                                                : selectedReport.status === "completed"
                                                     ? "bg-green-500 text-black"
-                                                : selectedReport.status === "rejected"
-                                                    ? "bg-red-500 text-white"
-                                                    : "bg-gray-500 text-white"
+                                                    : selectedReport.status === "rejected"
+                                                        ? "bg-red-500 text-white"
+                                                    : selectedReport.status === "Deleverd to admin"
+                                                            ? "bg-blue-500 text-white"
+                                                    : selectedReport.status === "Deleverd to technition"
+                                                            ? "bg-yellow-500 text-black"
+                                                        : "bg-gray-500 text-white"
                                                 }`}
                                         >
-                                            {selectedReport.status}
+                                            {/*{selectedReport.status}*/}
+                                            {selectedReport.status === "Deleverd to admin" ? "New" : selectedReport.status && selectedReport.status === "Deleverd to technition" ? "deleverd" : selectedReport.status }
                                         </span>
 
                                     </div>
                                     <div>
-                                       <h3 className="text-sm font-medium text-gray-400">Asigned Technition</h3>
-                                        <p>{selectedReport.assignedTechnician ||"not Assign Technition"}</p>
+                                        <h3 className="text-sm font-medium text-gray-400">Asigned Technition</h3>
+                                        <p>{selectedReport.assignedTechnician || "not Assign Technition"}</p>
                                     </div>
 
                                 </div>
@@ -311,12 +389,14 @@ export default function AdminDashboard() {
                                         >
                                             Add Technician
                                         </button>
+                                        {/*
                                         <button
                                             onClick={() => handleStatusUpdate("closed")}
                                             className="rounded-lg h-10 px-4 bg-red-500 text-white text-sm font-bold"
                                         >
                                             Close Report
                                         </button>
+                                        */}
                                     </div>
                                 </div>
                             </div>

@@ -91,9 +91,9 @@ export default function AdminDashboard() {
 
   //  Summary counts
   const totalReports = reports.length;
-  const pending = reports.filter((r) => r.status === "pending").length;
-  const inProgress = reports.filter((r) => r.status === "inprogress").length;
-  const completed = reports.filter((r) => r.status === "approved").length;
+  const New = reports.filter((r) => r.status === "Deleverd to admin").length;
+  const Deleverd = reports.filter((r) => r.status === "Deleverd to technition").length;
+  const completed = reports.filter((r) => r.status === "completed").length;
 
   return (
     <div className="flex h-screen">
@@ -131,12 +131,12 @@ export default function AdminDashboard() {
                   <p className="text-3xl font-bold text-white mt-1">{totalReports}</p>
                 </div>
                 <div className="bg-yellow-900/40 p-4 rounded-lg">
-                  <p className="text-sm text-yellow-300">Pending</p>
-                  <p className="text-3xl font-bold text-white mt-1">{pending}</p>
+                  <p className="text-sm text-yellow-300">New</p>
+                  <p className="text-3xl font-bold text-white mt-1">{New}</p>
                 </div>
                 <div className="bg-orange-900/40 p-4 rounded-lg">
-                  <p className="text-sm text-orange-300">In Progress</p>
-                  <p className="text-3xl font-bold text-white mt-1">{inProgress}</p>
+                  <p className="text-sm text-orange-300">Deleverd</p>
+                  <p className="text-3xl font-bold text-white mt-1">{Deleverd}</p>
                 </div>
                 <div className="bg-green-900/40 p-4 rounded-lg">
                   <p className="text-sm text-green-300">Completed</p>
