@@ -196,11 +196,12 @@ const handleAssignTechnician = async () => {
                             >
                                 <option value="all">All</option>
                                 <option value="pending">Pending</option>
-                                <option value="complete">complete</option>
+                                <option value="complete">completed</option>
                                 <option value="inprogress">In Progress</option>
                                 <option value="rejected">Rejected</option>
                                 <option value="Deleverd to admin">new</option>
                                 <option value="Deleverd to technition">deleverd</option>
+                                <option value="Deleverd to technition">Awaiting Parts</option>
                             </select>
 
                             <input
