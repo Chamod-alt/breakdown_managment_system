@@ -235,6 +235,8 @@
 
 
   <script>
+
+    
     // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyC6oz8ByvNsHZTVkWlO_s1OKysSRXI06Ho",
@@ -265,7 +267,10 @@
         console.log("Logged in as:", user.email);
 
         // You can map UID → technicianId if stored separately
-        const technicianId = user.email.split("@")[0]; // example mapping
+       
+       const technicianId = user.email.split("@")[0]; // example mapping
+
+ 
 
         loadBreakdowns(technicianId);
       } else {
@@ -430,6 +435,8 @@
       window.location.href = "login.html";
     });
   });
+  
+
   </script>
 
 
