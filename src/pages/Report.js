@@ -58,81 +58,113 @@ export default function AdminDashboard() {
         await update(reportRef, { status: newStatus });
         alert(`Status updated to ${newStatus}!`);
     };
-{/*
-    //  Assign technician and add admin note
+
+    /*
+
+    // Assign technician and send email notification
     const handleAssignTechnician = async () => {
         if (!selectedReport) return alert("Select a report first!");
         if (!selectedTechnician) return alert("Please select a technician.");
 
-        const reportRef = ref(database, `breakdowns/${selectedReport.id}`);
-        await update(reportRef, {
-            assignedTechnician: selectedTechnician,
-            adminNote: adminNote || "",
-            status: "Deleverd to technition"
-        });
+        try {
+            
+            //  Update in Firebase
+            const reportRef = ref(database, `breakdowns/${selectedReport.id}`);
+            await update(reportRef, {
+              assignedTechnician: selectedTechnician,
+              adminNote: adminNote || "",
+              status: "Deleverd to technition",            
+        
+            });
 
-        alert("Technician assigned successfully!");
-        setSelectedTechnician("");
-        setAdminNote("");
+            // Find the technician email from list
+            const technician = technicians.find(
+                (tech) => tech.name === selectedTechnician
+            );
+
+            if (technician && technician.email) {
+                // EmailJS: prepare email template parameters
+                const templateParams = {
+                    to_email: technician.email,
+                    technician_name: selectedTechnician,
+                    report_id: selectedReport.id,
+                    item_name: selectedReport.itemName,
+                    report_location: selectedReport.location,
+                    report_message: selectedReport.message,
+                    admin_note: adminNote || "No additional note",
+                    technician_email: technician.email,
+                    year: new Date().getFullYear(),
+                };
+
+                //  Send email via EmailJS
+                await emailjs.send(
+                    "service_x8sb3iq",         // Replace with your EmailJS Service ID
+                    "template_jt5a5zq",        // Replace with your EmailJS Template ID
+                    templateParams,
+                    "QZJ4qf0aZmug7dhTA"          //  Replace with your EmailJS Public Key
+                )
+
+                alert(`Technician ${selectedTechnician} assigned and notified by email!`);
+            } else {
+                alert("Technician email not found in database!");
+            }
+
+            //  Reset inputs
+            setSelectedTechnician("");
+            setAdminNote("");
+        } catch (error) {
+            console.error("Error assigning technician:", error);
+            alert("Error assigning technician. Check console for details.");
+        }
     };
+*/
 
-    */}
-    
 
-    // Assign technician and send email notification
-const handleAssignTechnician = async () => {
-  if (!selectedReport) return alert("Select a report first!");
-  if (!selectedTechnician) return alert("Please select a technician.");
+    // ✅ Assign technician and send email notification
+    const handleAssignTechnician = async () => {
+        if (!selectedReport) return alert("Select a report first!");
+        if (!selectedTechnician) return alert("Please select a technician.");
 
-  try {
-    //  Update in Firebase
-    const reportRef = ref(database, `breakdowns/${selectedReport.id}`);
-    await update(reportRef, {
-      assignedTechnician: selectedTechnician,
-      adminNote: adminNote || "",
-      status: "Deleverd to technition"
-    });
+        try {
+            // ✅ Update technician info in Firebase
+            const reportRef = ref(database, `breakdowns/${selectedReport.id}`);
+            await update(reportRef, {
+                assignedTechnician: selectedTechnician.name,
+                technition_email: selectedTechnician.email,
+                adminNote: adminNote || "",
+                status: "Deleverd to technition",
+            });
 
-    // Find the technician email from list
-    const technician = technicians.find(
-      (tech) => tech.name === selectedTechnician
-    );
+            // ✅ Prepare email template data directly from selectedTechnician
+            const templateParams = {
+                to_email: selectedTechnician.email,
+                technician_name: selectedTechnician.name,
+                report_id: selectedReport.id,
+                item_name: selectedReport.itemName,
+                report_location: selectedReport.location,
+                report_message: selectedReport.message,
+                admin_note: adminNote || "No additional note",
+                year: new Date().getFullYear(),
+            };
 
-    if (technician && technician.email) {
-      // EmailJS: prepare email template parameters
-      const templateParams = {
-        to_email: technician.email,
-        technician_name: selectedTechnician,
-        report_id: selectedReport.id,
-        item_name:selectedReport.itemName,
-        report_location: selectedReport.location,
-        report_message: selectedReport.message,
-        admin_note: adminNote || "No additional note",
-        technician_email: technician.email,
-        year: new Date().getFullYear(),
-      };
+            // ✅ Send email using EmailJS
+            await emailjs.send(
+                "service_x8sb3iq",      // Your EmailJS Service ID
+                "template_jt5a5zq",     // Your EmailJS Template ID
+                templateParams,
+                "QZJ4qf0aZmug7dhTA"     // Your EmailJS Public Key
+            );
 
-      //  Send email via EmailJS
-      await emailjs.send(
-        "service_x8sb3iq",         // Replace with your EmailJS Service ID
-        "template_jt5a5zq",        // Replace with your EmailJS Template ID
-        templateParams,
-        "QZJ4qf0aZmug7dhTA"          //  Replace with your EmailJS Public Key
-      )
+            alert(`Technician ${selectedTechnician.name} assigned and notified by email!`);
 
-      alert(`Technician ${selectedTechnician} assigned and notified by email!`);
-    } else {
-      alert("Technician email not found in database!");
-    }
-
-    //  Reset inputs
-    setSelectedTechnician("");
-    setAdminNote("");
-  } catch (error) {
-    console.error("Error assigning technician:", error);
-    alert("Error assigning technician. Check console for details.");
-  }
-};
+            // ✅ Reset fields
+            setSelectedTechnician("");
+            setAdminNote("");
+        } catch (error) {
+            console.error("Error assigning technician:", error);
+            alert("Error assigning technician. Check console for details.");
+        }
+    };
 
 
     useEffect(() => {
@@ -232,11 +264,11 @@ const handleAssignTechnician = async () => {
                                                         ? "bg-red-500 text-black"
                                                         : report.status === "Deleverd to admin"
                                                             ? "bg-blue-500 text-white"
-                                                        : report.status === "Deleverd to technition"
-                                                            ? "bg-yellow-500 text-black"
-                                                             : report.status === "resolved"
-                                                            ? "bg-green-500 text-white"
-                                                            : "bg-gray-500 text-white"
+                                                            : report.status === "Deleverd to technition"
+                                                                ? "bg-yellow-500 text-black"
+                                                                : report.status === "resolved"
+                                                                    ? "bg-green-500 text-white"
+                                                                    : "bg-gray-500 text-white"
 
                                                 }`}
                                         >
@@ -274,7 +306,7 @@ const handleAssignTechnician = async () => {
                                             Report {selectedReport.id.slice(-5)}
                                         </h2>
                                         <div className="flex gap-2">
-                                           {/* <button
+                                            {/* <button
                                                 onClick={() => handleStatusUpdate("approved")}
                                                 className="rounded-lg h-10 px-4 bg-green-500 text-white text-sm font-bold hover:bg-green-600"
                                             >
@@ -328,15 +360,15 @@ const handleAssignTechnician = async () => {
                                                     ? "bg-green-500 text-black"
                                                     : selectedReport.status === "rejected"
                                                         ? "bg-red-500 text-white"
-                                                    : selectedReport.status === "Deleverd to admin"
+                                                        : selectedReport.status === "Deleverd to admin"
                                                             ? "bg-blue-500 text-white"
-                                                    : selectedReport.status === "Deleverd to technition"
-                                                            ? "bg-yellow-500 text-black"
-                                                        : "bg-gray-500 text-white"
+                                                            : selectedReport.status === "Deleverd to technition"
+                                                                ? "bg-yellow-500 text-black"
+                                                                : "bg-gray-500 text-white"
                                                 }`}
                                         >
                                             {/*{selectedReport.status}*/}
-                                            {selectedReport.status === "Deleverd to admin" ? "New" : selectedReport.status && selectedReport.status === "Deleverd to technition" ? "deleverd" : selectedReport.status }
+                                            {selectedReport.status === "Deleverd to admin" ? "New" : selectedReport.status && selectedReport.status === "Deleverd to technition" ? "deleverd" : selectedReport.status}
                                         </span>
 
                                     </div>
@@ -358,6 +390,7 @@ const handleAssignTechnician = async () => {
                                 <div className="border-t border-gray-700 pt-6">
                                     <h3 className="text-lg font-bold mb-4">Assign Technician</h3>
                                     <div className="flex items-start gap-4">
+                                        {/*
                                         <select
                                             className="w-1/3 rounded-lg bg-gray-800 border-none text-white focus:ring-primary p-2"
                                             value={selectedTechnician}
@@ -374,6 +407,26 @@ const handleAssignTechnician = async () => {
                                                 <option disabled>No technicians available</option>
                                             )}
                                         </select>
+                                        */}
+
+                                        <select
+                                            className="w-1/3 rounded-lg bg-gray-800 border-none text-white focus:ring-primary p-2"
+                                            value={selectedTechnician?.uid || ""}
+                                            onChange={(e) => {
+                                                const selectedTech = technicians.find(
+                                                    (tech) => tech.uid === e.target.value
+                                                );
+                                                setSelectedTechnician(selectedTech);
+                                            }}
+                                        >
+                                            <option value="">Select Technician</option>
+                                            {technicians.map((tech) => (
+                                                <option key={tech.uid} value={tech.uid}>
+                                                    {tech.name} ({tech.email})
+                                                </option>
+                                            ))}
+                                        </select>
+
 
                                         <textarea
                                             className="w-2/3 rounded-lg bg-gray-800 border-none text-white focus:ring-primary p-2"
@@ -390,14 +443,7 @@ const handleAssignTechnician = async () => {
                                         >
                                             Add Technician
                                         </button>
-                                        {/*
-                                        <button
-                                            onClick={() => handleStatusUpdate("closed")}
-                                            className="rounded-lg h-10 px-4 bg-red-500 text-white text-sm font-bold"
-                                        >
-                                            Close Report
-                                        </button>
-                                        */}
+
                                     </div>
                                 </div>
                             </div>
